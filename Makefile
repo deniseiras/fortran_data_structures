@@ -36,7 +36,7 @@ all: $(APPNAME)
 # Builds the app
 $(APPNAME): $(OBJ)
 	$(CC) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
-#	$(RM) $(DEP)
+	$(RM) *.d *.mod
 
 # Creates the dependecy rules
 %.d: $(SRCDIR)/%$(EXT)
@@ -53,7 +53,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
 # Cleans complete project
 .PHONY: clean
 clean:
-	$(RM) $(DELOBJ) $(DEP) $(APPNAME) $(MOD)
+	$(RM) $(DELOBJ) $(DEP) $(APPNAME) *.mod
 
 # Cleans only all files with the extension .d
 .PHONY: cleandep
