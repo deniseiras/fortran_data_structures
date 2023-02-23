@@ -1,4 +1,4 @@
-module list
+module Modlist
   implicit none
 
   private
@@ -104,4 +104,4 @@ contains
     data => self%data
   end function list_get
 
-end module list
+end module Modlist

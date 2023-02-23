@@ -1,6 +1,6 @@
 ! A simple generic linked list test program
 program list_test
-  use list
+  use Modlist
   use data
   implicit none
 
