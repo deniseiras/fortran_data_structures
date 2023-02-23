@@ -1,5 +1,5 @@
 ! A derived type for storing data.
-module data
+module moddata
   implicit none
 
   private
@@ -15,4 +15,4 @@ module data
   type :: data_ptr
      type(data_t), pointer :: p
   end type data_ptr
-end module data
+end module moddata

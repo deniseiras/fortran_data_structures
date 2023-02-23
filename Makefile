@@ -18,6 +18,7 @@ OBJDIR = obj
 SRC = $(wildcard $(SRCDIR)/*$(EXT))
 OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
 DEP = $(OBJ:$(OBJDIR)/%.o=%.d)
+MOD = $(OBJ:$(OBJDIR)/%.o=%.mod)
 # UNIX-based OS variables & settings
 RM = rm
 DELOBJ = $(OBJ)
@@ -35,6 +36,7 @@ all: $(APPNAME)
 # Builds the app
 $(APPNAME): $(OBJ)
 	$(CC) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+#	$(RM) $(DEP)
 
 # Creates the dependecy rules
 %.d: $(SRCDIR)/%$(EXT)
@@ -51,7 +53,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
 # Cleans complete project
 .PHONY: clean
 clean:
-	$(RM) $(DELOBJ) $(DEP) $(APPNAME)
+	$(RM) $(DELOBJ) $(DEP) $(APPNAME) $(MOD)
 
 # Cleans only all files with the extension .d
 .PHONY: cleandep

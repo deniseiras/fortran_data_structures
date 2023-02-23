@@ -1,7 +1,7 @@
 ! A simple generic linked list test program
 program list_test
   use Modlist
-  use data
+  use Moddata
   implicit none
 
   type(list_t), pointer :: ll => null()
