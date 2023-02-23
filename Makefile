@@ -10,14 +10,14 @@ LDFLAGS =
 
 # Makefile settings - Can be customized.
 APPNAME = myapp
-EXT = .f90
+EXT = .F90
 SRCDIR = src
 OBJDIR = obj
 
 ############## Do not change anything from here downwards! #############
 SRC = $(wildcard $(SRCDIR)/*$(EXT))
 OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
-DEP = $(OBJ:$(OBJDIR)/%.o=%.d)
+DEP = $(OBJ:$(OBJDIR)/%.o=$(OBJDIR)/%.d)
 # UNIX-based OS variables & settings
 RM = rm
 DELOBJ = $(OBJ)

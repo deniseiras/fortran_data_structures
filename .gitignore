@@ -1,0 +1,4 @@
+obj/*.o
+myapp
+data.mod
+list.mod
