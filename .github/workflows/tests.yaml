@@ -27,16 +27,21 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: GCC - Install
-        run: |
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-          sudo apt-get update
-          sudo apt-get install -y gcc-${GCC_V} gfortran-${GCC_V} g++-${GCC_V}
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_V} 100 \
-          --slave /usr/bin/gfortran gfortran /usr/bin/gfortran-${GCC_V} \
-          --slave /usr/bin/g++      g++      /usr/bin/g++-${GCC_V} \
-          --slave /usr/bin/gcov     gcov     /usr/bin/gcov-${GCC_V}
+      # - name: GCC - Install
+      #   run: |
+      #     sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+      #     sudo apt-get update
+      #     sudo apt-get install -y gcc-${GCC_V} gfortran-${GCC_V} g++-${GCC_V}
+      #     sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_V} 100 \
+      #     --slave /usr/bin/gfortran gfortran /usr/bin/gfortran-${GCC_V} \
+      #     --slave /usr/bin/g++      g++      /usr/bin/g++-${GCC_V} \
+      #     --slave /usr/bin/gcov     gcov     /usr/bin/gcov-${GCC_V}
 
       - name: Compile Linked List
         run: |
           make -f Makefile
+      
+      - name: Run Tests
+        run: |
+          ./testLinkedList
+
