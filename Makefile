@@ -9,13 +9,15 @@ CXXFLAGS = -g -O0 -Wall
 LDFLAGS = 
 
 # Makefile settings - Can be customized.
-APPNAME = myapp
+APPNAME = testLinkedList
 EXT = .F90
 SRCDIR = src
+# TESTDIR = test
 OBJDIR = obj
 
 ############## Do not change anything from here downwards! #############
-SRC = $(wildcard $(SRCDIR)/*$(EXT))
+SRC = $(wildcard $(SRCDIR)/*/*$(EXT))
+# TEST = $(wildcard $(TESTDIR)/*/*$(EXT))
 OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
 DEP = $(OBJ:$(OBJDIR)/%.o=%.d)
 MOD = $(OBJ:$(OBJDIR)/%.o=%.mod)
@@ -47,7 +49,10 @@ $(APPNAME): $(OBJ)
 
 # Building rule for .o files and its .c/.cpp in combination with all .h
 $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
-	@mkdir -p $(OBJDIR)
+	@mkdir -p $(OBJDIR)/model
+	@mkdir -p $(OBJDIR)/controller
+	@mkdir -p $(OBJDIR)/test
+
 	$(CC) $(CXXFLAGS) -o $@ -c $<
 
 ################### Cleaning rules for Unix-based OS ###################
