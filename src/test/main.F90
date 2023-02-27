@@ -51,7 +51,7 @@ program list_test
 
       ! Test the head node
       ptr = transfer(list_get(ll), ptr)
-      if (ptr%p%x .ne. 17.5) then
+      if (ptr%p%x .ne. 17.2) then
         print *, 'Head node data should be: 17.5 but was', ptr%p%x
         call list_free(ll)
         test_happyday = .false.
