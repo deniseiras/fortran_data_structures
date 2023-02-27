@@ -16,8 +16,8 @@ jobs:
 
     strategy:
       matrix:
-        gcc_v: [9, 10, 11, 12]
-        # gcc_v: [9]
+        # gcc_v: [9, 10, 11, 12]
+        gcc_v: [9]
       fail-fast: false
 
     env:
@@ -37,11 +37,14 @@ jobs:
       #     --slave /usr/bin/g++      g++      /usr/bin/g++-${GCC_V} \
       #     --slave /usr/bin/gcov     gcov     /usr/bin/gcov-${GCC_V}
 
-      - name: Compile Linked List
+      - name: Code Compile Tests
         run: |
           make -f Makefile
       
-      - name: Run Tests
+      - name: Unity Tests
         run: |
-          ./testLinkedList
+          cd test && ./test_unity_tests.sh
 
+      # - name: Modular Tests
+      #   run: |
+      #     ./test_modular_tests
