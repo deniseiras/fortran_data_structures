@@ -35,16 +35,15 @@ all: $(APPNAME)
 
 # Builds the app
 $(APPNAME): $(OBJ) 
-	echo "building test app"
 	$(CC) $(CXXFLAGS) -o ${APP} ${TESTDIR}/${APPNAME}$(EXT) $^ $(LDFLAGS)
 #	$(RM) *.d *.mod
 
 
 # Building rule for .o files and its .c/.cpp in combination with all .h
 $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
-	echo "building model"
 	@mkdir -p $(OBJDIR)/model
 	@mkdir -p $(OBJDIR)/controller
+	@mkdir -p $(OBJDIR)/test
 	$(CC) $(CXXFLAGS) -o $@ -c $<
 
 
@@ -53,5 +52,4 @@ $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
 .PHONY: clean
 
 clean:
-	echo "Cleaning ..."
 	$(RM) $(DELOBJ) $(MOD) ${APP} 
