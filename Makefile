@@ -22,10 +22,8 @@ OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
 DEP = $(OBJ:$(OBJDIR)/%.o=%.d)
 MOD = $(OBJ:$(OBJDIR)/%.o=%.mod)
 # UNIX-based OS variables & settings
-RM = rm
+RM = rm -rf
 DELOBJ = $(OBJ)
-# Windows OS variables & settings
-DEL = del
 EXE = .exe
 WDELOBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)\\%.o)
 
@@ -70,9 +68,9 @@ cleandep:
 # Cleans complete project
 .PHONY: cleanw
 cleanw:
-	$(DEL) $(WDELOBJ) $(DEP) $(APPNAME)$(EXE)
+	$(RM) $(WDELOBJ) $(DEP) $(APPNAME)$(EXE)
 
 # Cleans only all files with the extension .d
 .PHONY: cleandepw
 cleandepw:
-	$(DEL) $(DEP)
+	$(RM) $(DEP)
