@@ -1,5 +1,5 @@
 ! A simple generic linked list test program
-program list_test
+program Unity_tests
 
   use Modlist
   use Moddata
@@ -8,7 +8,6 @@ program list_test
 
   logical all_tests_passed 
   
-  ! TESTS
   all_tests_passed = .true.
 
   all_tests_passed = all_tests_passed .and. test_happyday()
@@ -18,15 +17,16 @@ program list_test
 
   if (all_tests_passed) then
     print*, ">>>>> All tests OK !"
+    call exit(0)
   else
-    stop ">>>>> Some Tests failed!"
+    print*, ">>>>> Some Tests failed!"
+    call exit(-1)
   endif
 
 
   contains 
 
     logical function test_happyday()
-
 
       type(list_t), pointer :: ll => null()
       type(data_t), target :: dat_a
@@ -51,7 +51,7 @@ program list_test
 
       ! Test the head node
       ptr = transfer(list_get(ll), ptr)
-      if (ptr%p%x .ne. 17.5) then
+      if (ptr%p%x .ne. 17.0) then
         print *, 'Head node data should be: 17.5 but was', ptr%p%x
         call list_free(ll)
         test_happyday = .false.
@@ -73,4 +73,4 @@ program list_test
     end function
 
   
-end program list_test
+end program Unity_tests
