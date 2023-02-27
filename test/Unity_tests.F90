@@ -9,11 +9,8 @@ program Unity_tests
   logical all_tests_passed 
   
   all_tests_passed = .true.
-
-  all_tests_passed = all_tests_passed .and. test_happyday()
-  if (.not. all_tests_passed) then
-    print*, ">>>>> Test happy day FAILED!"
-  endif
+  all_tests_passed = all_tests_passed .and. test_list_init()
+  all_tests_passed = all_tests_passed .and. test_list_insert_second()
 
   if (all_tests_passed) then
     print*, ">>>>> All tests OK !"
@@ -26,14 +23,47 @@ program Unity_tests
 
   contains 
 
-    logical function test_happyday()
+
+    logical function test_list_init() result(test_result)
+
+      type(list_t), pointer :: ll => null()
+      type(data_t), target :: dat_a
+      type(data_ptr) :: ptr
+
+      print*, ">>>>> Running Test List Initilize"
+      test_result = .true.
+
+      ! Initialize two data objects
+      dat_a%x = 17.5
+
+      ! Initialize the list with dat_a
+      ptr%p => dat_a
+      call list_init(ll, DATA=transfer(ptr, list_data))
+      print *, 'Initializing list with data:', ptr%p
+
+      ! Test the head node
+      ptr = transfer(list_get(ll), ptr)
+      if (ptr%p%x .ne. 17.5) then
+        print *, 'Head node data should be: 17.5 but was', ptr%p%x
+        test_result = .false.
+      endif
+      
+      call list_free(ll)
+      return
+
+    end function
+
+
+
+    logical function test_list_insert_second() result(test_result)
 
       type(list_t), pointer :: ll => null()
       type(data_t), target :: dat_a
       type(data_t), target :: dat_b
       type(data_ptr) :: ptr
 
-      test_happyday = .true.
+      print*, ">>>>> Running Test List Insert second element"
+      test_result = .true.
 
       ! Initialize two data objects
       dat_a%x = 17.5
@@ -54,7 +84,7 @@ program Unity_tests
       if (ptr%p%x .ne. 17.5) then
         print *, 'Head node data should be: 17.5 but was', ptr%p%x
         call list_free(ll)
-        test_happyday = .false.
+        test_result = .false.
         return
       endif
       
@@ -63,7 +93,7 @@ program Unity_tests
       if (ptr%p%x .ne. 3.0) then
         print *, 'Second node data should be: 3.0 but was', ptr%p%x
         call list_free(ll)
-        test_happyday = .false.
+        test_result = .false.
         return
       endif
 
