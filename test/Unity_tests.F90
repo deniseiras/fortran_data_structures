@@ -51,7 +51,7 @@ program Unity_tests
 
       ! Test the head node
       ptr = transfer(list_get(ll), ptr)
-      if (ptr%p%x .ne. 17.0) then
+      if (ptr%p%x .ne. 17.5) then
         print *, 'Head node data should be: 17.5 but was', ptr%p%x
         call list_free(ll)
         test_happyday = .false.
