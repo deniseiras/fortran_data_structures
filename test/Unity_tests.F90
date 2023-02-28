@@ -63,7 +63,7 @@ program Unity_tests
       test_result = .true.
 
       ! Initialize two data objects
-      dat_a%x = 2
+      dat_a%x = 1
 
       ! Initialize the list with dat_a
       ptr%p => dat_a
