@@ -45,6 +45,6 @@ jobs:
         run: |
           cd test && ./test_unity_tests.sh
 
-      # - name: Modular Tests
-      #   run: |
-      #     ./test_modular_tests
+      - name: Modular Tests
+        run: |
+          cd test && ./test_modular_tests.sh
