@@ -8,7 +8,7 @@ module moddata
 
   ! Data is stored in data_t
   type :: data_t
-     real :: x
+     integer :: x
   end type data_t
 
   ! A trick to allow us to store pointers in the list

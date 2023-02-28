@@ -8,7 +8,10 @@ program Unity_tests
 
   logical all_tests_passed 
   
+  print*, ">>>>> Running Unity Tests"
+
   all_tests_passed = .true.
+  all_tests_passed = all_tests_passed .and. test_list_init_empty()
   all_tests_passed = all_tests_passed .and. test_list_init()
   all_tests_passed = all_tests_passed .and. test_list_insert_second()
 
@@ -24,7 +27,33 @@ program Unity_tests
   contains 
 
 
+  logical function test_list_init_empty() result(test_result)
+
+      implicit none 
+
+      type(list_t), pointer :: ll => null()
+
+      print*, ">>>>> Running Test List Initilize Empty"
+      test_result = .true.
+
+      call list_init(ll)
+      print *, 'Initializing empty list '
+
+      ! Test the head node
+      if (associated(list_get(ll))) then
+        print *, 'List head node should be empty!'
+        test_result = .false.
+      endif
+      
+      call list_free(ll)
+      return
+
+    end function
+
+
     logical function test_list_init() result(test_result)
+
+      implicit none 
 
       type(list_t), pointer :: ll => null()
       type(data_t), target :: dat_a
@@ -34,7 +63,7 @@ program Unity_tests
       test_result = .true.
 
       ! Initialize two data objects
-      dat_a%x = 17.5
+      dat_a%x = 1
 
       ! Initialize the list with dat_a
       ptr%p => dat_a
@@ -43,8 +72,8 @@ program Unity_tests
 
       ! Test the head node
       ptr = transfer(list_get(ll), ptr)
-      if (ptr%p%x .ne. 17.5) then
-        print *, 'Head node data should be: 17.5 but was', ptr%p%x
+      if (ptr%p%x .ne. 1) then
+        print *, 'Head node data should be: 1 but was', ptr%p%x
         test_result = .false.
       endif
       
@@ -57,6 +86,8 @@ program Unity_tests
 
     logical function test_list_insert_second() result(test_result)
 
+      implicit none 
+
       type(list_t), pointer :: ll => null()
       type(data_t), target :: dat_a
       type(data_t), target :: dat_b
@@ -66,8 +97,8 @@ program Unity_tests
       test_result = .true.
 
       ! Initialize two data objects
-      dat_a%x = 17.5
-      dat_b%x = 3.0
+      dat_a%x = 1
+      dat_b%x = 2
 
       ! Initialize the list with dat_a
       ptr%p => dat_a
@@ -81,8 +112,8 @@ program Unity_tests
 
       ! Test the head node
       ptr = transfer(list_get(ll), ptr)
-      if (ptr%p%x .ne. 17.5) then
-        print *, 'Head node data should be: 17.5 but was', ptr%p%x
+      if (ptr%p%x .ne. 1) then
+        print *, 'Head node data should be: 1 but was', ptr%p%x
         call list_free(ll)
         test_result = .false.
         return
@@ -90,8 +121,8 @@ program Unity_tests
       
       ! Test the next node
       ptr = transfer(list_get(list_next(ll)), ptr)
-      if (ptr%p%x .ne. 3.0) then
-        print *, 'Second node data should be: 3.0 but was', ptr%p%x
+      if (ptr%p%x .ne. 2) then
+        print *, 'Second node data should be: 2 but was', ptr%p%x
         call list_free(ll)
         test_result = .false.
         return

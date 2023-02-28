@@ -8,7 +8,8 @@ CXXFLAGS = -g -O0 -Wall
 LDFLAGS = 
 
 # Makefile settings - Can be customized.
-APPNAME = Unity_tests
+UNITY_TESTS = Unity_tests
+MODULAR_TESTS = Modular_tests
 EXT = .F90
 SRCDIR = src
 TESTDIR = test
@@ -18,28 +19,30 @@ OBJDIR = obj
 SRC = $(wildcard $(SRCDIR)/*/*$(EXT))
 
 OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
-MOD = $(OBJ:$(OBJDIR)/%.o=%.mod)
+MOD = *.mod
 OBJTEST = $(TEST:$(TESTDIR)/%$(EXT)=$(TESTDIR)/%.o)
 
-# UNIX-based OS variables & settings
+UNITY_TESTS_APP = ${OBJDIR}/test/${UNITY_TESTS}
+MODULAR_TESTS_APP = ${OBJDIR}/test/${MODULAR_TESTS}
+
 RM = rm -rf
-DELOBJ = $(OBJ) $(OBJTEST)
-APP = ${OBJDIR}/test/${APPNAME}
-
-
 ########################################################################
 ####################### Targets beginning here #########################
 ########################################################################
 
-all: $(APPNAME)
+all: $(UNITY_TESTS) $(MODULAR_TESTS)
 
-# Builds the app
-$(APPNAME): $(OBJ) 
-	$(CC) $(CXXFLAGS) -o ${APP} ${TESTDIR}/${APPNAME}$(EXT) $^ $(LDFLAGS)
-#	$(RM) *.d *.mod
+# Builds the app Unity Tests
+$(UNITY_TESTS): $(OBJ) 
+	$(CC) $(CXXFLAGS) -o ${UNITY_TESTS_APP} ${TESTDIR}/${UNITY_TESTS}$(EXT) $^ $(LDFLAGS)
 
 
-# Building rule for .o files and its .c/.cpp in combination with all .h
+# Builds the app Modular Tests
+$(MODULAR_TESTS): $(OBJ) 
+	$(CC) $(CXXFLAGS) -o ${MODULAR_TESTS_APP} ${TESTDIR}/${MODULAR_TESTS}$(EXT) $^ $(LDFLAGS)
+
+
+# Building rule for .o files
 $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
 	@mkdir -p $(OBJDIR)/model
 	@mkdir -p $(OBJDIR)/controller
@@ -52,4 +55,4 @@ $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
 .PHONY: clean
 
 clean:
-	$(RM) $(DELOBJ) $(MOD) ${APP} 
+	$(RM) $(OBJ) $(OBJTEST) $(MOD) ${MODULAR_TESTS_APP} ${UNITY_TESTS_APP}
