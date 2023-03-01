@@ -29,8 +29,8 @@ program Modular_tests
 
       type(list_t), pointer :: ll => null()
       type(list_t), pointer :: list_pointer => null()
-      type(data_t), target :: dat_a
-      type(data_ptr) :: data_ptr_var
+      type(data_t), target  :: dat_a
+      type(data_t), pointer :: data_t_ptr_aux
 
       integer :: an_integer
       integer, parameter :: p_max_iterations = 1000000
@@ -49,11 +49,12 @@ program Modular_tests
       call cpu_time(time_initial)
       do an_integer = 0, p_max_iterations
         dat_a%x = an_integer
-        data_ptr_var%p => dat_a
-        call list_insert(ll, DATA=transfer(data_ptr_var, list_data))
+        data_t_ptr_aux => dat_a
+        call list_insert(ll, DATA=transfer(data_t_ptr_aux, list_data))
       enddo
       call cpu_time(time_final)
       
+      ! check performance
       print *, 'Insert Max time = ', p_insert_max_time_allowed, '; Run time = ', time_final-time_initial
       if (time_final-time_initial > p_insert_max_time_allowed) then
         print *, 'Insert Max time exceeded!!!'
@@ -62,26 +63,38 @@ program Modular_tests
         return
       endif
 
-
-      ! List Visit test
-      !
-      call cpu_time(time_initial)
-      list_pointer => list_next(ll)
-      do 
-        data_ptr_var = transfer(list_get(list_pointer), data_ptr_var)
-        ! print*, data_ptr_var%p%x
-        list_pointer => list_next(list_pointer)
-        if (.not. associated(list_pointer)) exit
-      enddo
-      
-      if (data_ptr_var%p%x .ne. p_max_iterations) then
-        print *, 'Last element should be: ', p_max_iterations, ' but was', data_ptr_var%p%x
+      ! check HEAD
+      data_t_ptr_aux = transfer(list_get(list_next(ll)), data_t_ptr_aux)
+      print*, 'Checking head element ...', data_t_ptr_aux%x
+      if(data_t_ptr_aux%x .ne. p_max_iterations) then
+        print *, 'Head element should be: ', p_max_iterations, ' but was', data_t_ptr_aux%x
         test_result = .false.
         call list_free(ll)
         return
       endif
+
+
+      ! List Visit test
+      call cpu_time(time_initial)
+      list_pointer => list_next(ll)
+      do 
+        data_t_ptr_aux = transfer(list_get(list_pointer), data_t_ptr_aux)
+        ! print*, data_t_ptr_aux%x
+        list_pointer => list_next(list_pointer)
+        if (.not. associated(list_pointer)) exit
+      enddo
       call cpu_time(time_final)
-      
+
+
+      print*, 'Checking last element ...', data_t_ptr_aux%x
+      if (data_t_ptr_aux%x .ne. 0) then
+        print *, 'Last element should be 0 but was', data_t_ptr_aux%x
+        test_result = .false.
+        call list_free(ll)
+        return
+      endif
+
+
       print *, 'Visit Max time = ', p_visit_max_time_allowed, '; Run time = ', time_final-time_initial
       if (time_final-time_initial > p_visit_max_time_allowed) then
         print *, 'Visit Max time exceeded!!!'
@@ -94,5 +107,6 @@ program Modular_tests
       return
 
     end function
+
   
 end program Modular_tests

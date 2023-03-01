@@ -1,4 +1,6 @@
 module Modlist
+
+  use moddata
   implicit none
 
   private
@@ -13,12 +15,12 @@ module Modlist
   public :: list_next
 
   ! A public variable to use as a MOLD for transfer()
-  integer, dimension(:), allocatable :: list_data
+  type(data_t), dimension(:), allocatable :: list_data
 
   ! Linked list node data type
   type :: list_t
      private
-     integer, dimension(:), pointer :: data => null()
+     type(data_t), dimension(:), pointer :: data => null()
      type(list_t), pointer :: next => null()
   end type list_t
 
@@ -27,7 +29,7 @@ contains
   ! Initialize a head node SELF and optionally store the provided DATA.
   subroutine list_init(self, data)
     type(list_t), pointer :: self
-    integer, dimension(:), intent(in), optional :: data
+    type(data_t), dimension(:), intent(in), optional :: data
 
     allocate(self)
     nullify(self%next)
@@ -69,7 +71,7 @@ contains
   ! Insert a list node after SELF containing DATA (optional)
   subroutine list_insert(self, data)
     type(list_t), pointer :: self
-    integer, dimension(:), intent(in), optional :: data
+    type(data_t), dimension(:), intent(in), optional :: data
     type(list_t), pointer :: next
 
     allocate(next)
@@ -88,7 +90,7 @@ contains
   ! Store the encoded DATA in list node SELF
   subroutine list_put(self, data)
     type(list_t), pointer :: self
-    integer, dimension(:), intent(in) :: data
+    type(data_t), dimension(:), intent(in) :: data
 
     if (associated(self%data)) then
        deallocate(self%data)
@@ -100,7 +102,7 @@ contains
   ! Return the DATA stored in the node SELF
   function list_get(self) result(data)
     type(list_t), pointer :: self
-    integer, dimension(:), pointer :: data
+    type(data_t), dimension(:), pointer :: data
     data => self%data
   end function list_get
 
