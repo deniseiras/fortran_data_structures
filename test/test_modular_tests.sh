@@ -1,1 +1,0 @@
-../obj/test/Modular_tests; exit $?

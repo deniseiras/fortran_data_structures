@@ -1,1 +1,0 @@
-../obj/test/Unity_tests; exit $?
