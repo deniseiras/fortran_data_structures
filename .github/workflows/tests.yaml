@@ -37,14 +37,32 @@ jobs:
       #     --slave /usr/bin/g++      g++      /usr/bin/g++-${GCC_V} \
       #     --slave /usr/bin/gcov     gcov     /usr/bin/gcov-${GCC_V}
 
-      - name: Code Compile Tests
-        run: |
-          make -f Makefile
-      
-      - name: Unity Tests
-        run: |
-          cd test && ./test_unity_tests.sh
 
-      - name: Modular Tests
+
+      # Unity and Module tests - DEBUG type
+      - name: Compile Tests Unity and Module - DEBUG
         run: |
-          cd test && ./test_modular_tests.sh
+          make clean
+          make
+              
+        # default make is debug -Og -Wall -fcheck=all, generates Unity_tests_debug, Modular_tests_debug
+      - name: Run Unity Tests - DEBUG
+        run: |
+          cd test && ./run_tests_with_type_of_param.sh Unity_tests_debug
+
+      - name: Run Modular Tests - DEBUG
+        run: |
+          cd test && ./run_tests_with_type_of_param.sh Modular_tests_debug
+
+
+
+      # Performance steps of Modular Tests
+      # default make is debug -Og -Wall -fcheck=all, generates Unity_tests_debug, Modular_tests_debug
+      - name: Compile Tests Unity and Module - Performance
+        run: |
+          make clean
+          FFLAGS=-O3 UNITY_TESTS_APP_NAME=Unity_tests_O3 MODULAR_TESTS_APP_NAME=Modular_tests_O3 make
+      
+      - name: Run Modular Tests - Performance
+        run: |
+          cd test && ./run_tests_with_type_of_param.sh Modular_tests_O3
