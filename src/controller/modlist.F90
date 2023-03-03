@@ -13,6 +13,7 @@ module Modlist
   public :: list_put
   public :: list_get
   public :: list_next
+  public :: list_remove
 
   ! A public variable to use as a MOLD for transfer()
   type(data_t), dimension(:), allocatable :: list_data
@@ -105,5 +106,16 @@ contains
     type(data_t), dimension(:), pointer :: data
     data => self%data
   end function list_get
+
+    ! Insert a list node after SELF containing DATA (optional)
+  subroutine list_remove(self, before)
+    type(list_t), pointer :: self
+    type(list_t), pointer :: before
+
+    deallocate(self%data)
+    nullify(self%data)
+    before%next => self%next
+
+  end subroutine list_remove
 
 end module Modlist
