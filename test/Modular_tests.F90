@@ -139,7 +139,6 @@ program Modular_tests
       list_size = p_num_of_insertions
 
       ! Insert values
-      
       do an_integer = 1, p_num_of_insertions
         dat_a%x = an_integer
         data_t_ptr_aux => dat_a
@@ -188,5 +187,17 @@ program Modular_tests
 
     end function
 
+
+! TODO
+    logical function test_vector_insert_performance() result(test_result)
+
+      use ModVector
+
+    end function
+
+    logical function test_vectot_random_remove_performance() result(test_result)
+      use ModVector
+
+    end function
   
 end program Modular_tests

@@ -18,7 +18,7 @@ module Modlist
   ! A public variable to use as a MOLD for transfer()
   type(data_t), dimension(:), allocatable :: list_data
 
-  ! Linked list node data type
+  ! Linked list node data typetype(data_t), dimension(:), intent(in), optional :: data
   type :: list_t
      private
      type(data_t), dimension(:), pointer :: data => null()
@@ -26,6 +26,7 @@ module Modlist
   end type list_t
 
 contains
+
 
   ! Initialize a head node SELF and optionally store the provided DATA.
   subroutine list_init(self, data)
@@ -43,6 +44,7 @@ contains
     end if
   end subroutine list_init
 
+
   ! Free the entire list and all data, beginning at SELF
   subroutine list_free(self)
     type(list_t), pointer :: self
@@ -55,12 +57,10 @@ contains
        if (associated(current%data)) then
           deallocate(current%data)
           nullify(current%data)
-       end if
-       deallocate(current)
-       nullify(current)
-       current => next
+       end ifdata_t
     end do
   end subroutine list_free
+
 
   ! Return the next node after SELF
   function list_next(self) result(next)
@@ -69,24 +69,26 @@ contains
     next => self%next
   end function list_next
 
+
   ! Insert a list node after SELF containing DATA (optional)
   subroutine list_insert(self, data)
     type(list_t), pointer :: self
     type(data_t), dimension(:), intent(in), optional :: data
-    type(list_t), pointer :: next
+    type(list_t), pointer :: new
 
-    allocate(next)
+    allocate(new)
 
     if (present(data)) then
-       allocate(next%data(size(data)))
-       next%data = data
+       allocate(new%data(size(data)))
+       new%data = data
     else
-       nullify(next%data)
+       nullify(new%data)
     end if
 
-    next%next => self%next
-    self%next => next
+    new%next => self%next
+    self%next => new
   end subroutine list_insert
+
 
   ! Store the encoded DATA in list node SELF
   subroutine list_put(self, data)
@@ -100,12 +102,14 @@ contains
     self%data = data
   end subroutine list_put
 
+
   ! Return the DATA stored in the node SELF
   function list_get(self) result(data)
     type(list_t), pointer :: self
     type(data_t), dimension(:), pointer :: data
     data => self%data
   end function list_get
+
 
     ! Insert a list node after SELF containing DATA (optional)
   subroutine list_remove(self, before)
