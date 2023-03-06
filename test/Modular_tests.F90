@@ -1,7 +1,6 @@
 ! A simple generic linked list test program
 program Modular_tests
 
-  use Modlist
   use Moddata
 
   implicit none
@@ -27,6 +26,8 @@ program Modular_tests
 
 
     logical function test_list_insert_performance() result(test_result)
+      use Modlist
+      implicit none
 
       type(list_t), pointer :: ll => null()
       type(list_t), pointer :: list_pointer => null()
@@ -111,6 +112,8 @@ program Modular_tests
 
 
     logical function test_list_random_remove_performance() result(test_result)
+      use Modlist
+      implicit none
 
       type(list_t), pointer :: ll => null()
       type(list_t), pointer :: list_pointer => null()
@@ -190,13 +193,14 @@ program Modular_tests
 
 ! TODO
     logical function test_vector_insert_performance() result(test_result)
-
       use ModVector
+      implicit none
 
     end function
 
     logical function test_vectot_random_remove_performance() result(test_result)
       use ModVector
+      implicit none
 
     end function
   

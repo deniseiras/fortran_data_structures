@@ -57,7 +57,10 @@ contains
        if (associated(current%data)) then
           deallocate(current%data)
           nullify(current%data)
-       end ifdata_t
+       end if
+       deallocate(current)
+       nullify(current)
+       current => next
     end do
   end subroutine list_free
 

@@ -37,13 +37,13 @@ RM = rm -rf
 all: $(UNITY_TESTS) $(MODULAR_TESTS)
 
 # Builds the app Unity Tests
-$(UNITY_TESTS): $(OBJ_TEST) $(OBJDIR)/model/moddata.o $(OBJDIR)/controller/modlist.o 
+$(UNITY_TESTS): $(OBJ_TEST) $(OBJDIR)/model/moddata.o $(OBJDIR)/controller/modvector.o $(OBJDIR)/controller/modlist.o
 	@mkdir -p $(OBJDIR)/test
 	$(CC) $(FFLAGS) -o ${UNITY_TESTS_APP} ${TESTDIR}/${UNITY_TESTS}$(EXT) $^ $(LDFLAGS)
 
 
 # Builds the app Modular Tests
-$(MODULAR_TESTS): $(OBJ_TEST) $(OBJDIR)/model/moddata.o $(OBJDIR)/controller/modlist.o 
+$(MODULAR_TESTS): $(OBJ_TEST) $(OBJDIR)/model/moddata.o $(OBJDIR)/controller/modvector.o $(OBJDIR)/controller/modlist.o
 	$(CC) $(FFLAGS) -o ${MODULAR_TESTS_APP} ${TESTDIR}/${MODULAR_TESTS}$(EXT) $^ $(LDFLAGS)
 
 
@@ -53,6 +53,11 @@ $(OBJDIR)/model/moddata.o: $(SRCDIR)/model/moddata.F90
 
 
 $(OBJDIR)/controller/modlist.o: $(SRCDIR)/controller/modlist.F90 $(OBJDIR)/model/moddata.o
+	@mkdir -p $(OBJDIR)/controller
+	$(CC) $(FFLAGS) -o $@ -c $<
+
+
+$(OBJDIR)/controller/modvector.o: $(SRCDIR)/controller/modvector.F90 $(OBJDIR)/model/moddata.o
 	@mkdir -p $(OBJDIR)/controller
 	$(CC) $(FFLAGS) -o $@ -c $<
 
