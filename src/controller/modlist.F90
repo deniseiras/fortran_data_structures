@@ -21,7 +21,7 @@ module Modlist
   ! Linked list node data typetype(data_t), dimension(:), intent(in), optional :: data
   type :: list_t
      private
-     type(data_t), dimension(:), pointer :: data => null()
+     type(data_t), allocatable :: data
      type(list_t), pointer :: next => null()
   end type list_t
 
@@ -30,18 +30,15 @@ contains
 
   ! Initialize a head node SELF and optionally store the provided DATA.
   subroutine list_init(self, data)
-    type(list_t), pointer :: self
-    type(data_t), dimension(:), intent(in), optional :: data
+    type(list_t), intent(inout), pointer :: self
+    type(data_t), intent(in) :: data
 
     allocate(self)
     nullify(self%next)
 
-    if (present(data)) then
-       allocate(self%data(size(data)))
-       self%data = data
-    else
-       nullify(self%data)
-    end if
+    allocate(self%data)
+    self%data = data
+
   end subroutine list_init
 
 
@@ -54,9 +51,8 @@ contains
     current => self
     do while (associated(current))
        next => current%next
-       if (associated(current%data)) then
+       if (allocated(current%data)) then
           deallocate(current%data)
-          nullify(current%data)
        end if
        deallocate(current)
        nullify(current)
@@ -75,33 +71,31 @@ contains
 
   ! Insert a list node after SELF containing DATA (optional)
   subroutine list_insert(self, data)
-    type(list_t), pointer :: self
-    type(data_t), dimension(:), intent(in), optional :: data
+    type(list_t), intent(inout), pointer :: self
+    type(data_t), intent(in), optional :: data
     type(list_t), pointer :: new
 
     allocate(new)
 
     if (present(data)) then
-       allocate(new%data(size(data)))
+       allocate(new%data)
        new%data = data
-    else
-       nullify(new%data)
     end if
 
-    new%next => self%next
-    self%next => new
+    new%next => self
+    self => new
   end subroutine list_insert
 
 
   ! Store the encoded DATA in list node SELF
   subroutine list_put(self, data)
     type(list_t), pointer :: self
-    type(data_t), dimension(:), intent(in) :: data
+    type(data_t), allocatable, intent(in) :: data
 
-    if (associated(self%data)) then
+    if (allocated(self%data)) then
        deallocate(self%data)
-       nullify(self%data)
     end if
+    allocate(self%data)
     self%data = data
   end subroutine list_put
 
@@ -109,8 +103,8 @@ contains
   ! Return the DATA stored in the node SELF
   function list_get(self) result(data)
     type(list_t), pointer :: self
-    type(data_t), dimension(:), pointer :: data
-    data => self%data
+    type(data_t) :: data
+    data = self%data
   end function list_get
 
 
@@ -120,7 +114,6 @@ contains
     type(list_t), pointer :: before
 
     deallocate(self%data)
-    nullify(self%data)
     before%next => self%next
 
   end subroutine list_remove

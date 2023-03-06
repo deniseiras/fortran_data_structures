@@ -31,8 +31,7 @@ program Modular_tests
 
       type(list_t), pointer :: ll => null()
       type(list_t), pointer :: list_pointer => null()
-      type(data_t), target  :: dat_a
-      type(data_t), pointer :: data_t_ptr_aux
+      type(data_t), allocatable :: dat_a
 
       integer :: an_integer
       integer, parameter :: p_num_of_insertions = 1000000
@@ -44,15 +43,18 @@ program Modular_tests
       print*, ">>>>> Running Test List Insert and Visit Performance"
       test_result = .true.
 
-      call list_init(ll)
-
-      ! List Insert test
+      ! List Insert
       !
       call cpu_time(time_initial)
-      do an_integer = 0, p_num_of_insertions
+      allocate(dat_a)
+      dat_a%x = 1
+      call list_init(ll, dat_a)
+      deallocate(dat_a)
+      do an_integer = 2, p_num_of_insertions
+        allocate(dat_a)
         dat_a%x = an_integer
-        data_t_ptr_aux => dat_a
-        call list_insert(ll, DATA=transfer(data_t_ptr_aux, list_data))
+        call list_insert(ll, DATA=dat_a)
+        deallocate(dat_a)
       enddo
       call cpu_time(time_final)
       
@@ -66,31 +68,30 @@ program Modular_tests
       endif
 
       ! check HEAD
-      data_t_ptr_aux = transfer(list_get(list_next(ll)), data_t_ptr_aux)
-      print*, 'Checking head element ...', data_t_ptr_aux%x
-      if(data_t_ptr_aux%x .ne. p_num_of_insertions) then
-        print *, 'Head element should be: ', p_num_of_insertions, ' but was', data_t_ptr_aux%x
+      dat_a = list_get(ll)
+      print*, 'Checking head element ...', dat_a%x
+      if(dat_a%x .ne. p_num_of_insertions) then
+        print *, 'Head element should be: ', p_num_of_insertions, ' but was', dat_a%x
         test_result = .false.
         call list_free(ll)
         return
       endif
 
-
       ! List Visit test
       call cpu_time(time_initial)
-      list_pointer => list_next(ll)
+      list_pointer => ll
       do 
-        data_t_ptr_aux = transfer(list_get(list_pointer), data_t_ptr_aux)
-        ! print*, data_t_ptr_aux%x
+        ! do a quick visit
+        dat_a = list_get(list_pointer)
         list_pointer => list_next(list_pointer)
         if (.not. associated(list_pointer)) exit
       enddo
       call cpu_time(time_final)
 
 
-      print*, 'Checking last element ...', data_t_ptr_aux%x
-      if (data_t_ptr_aux%x .ne. 0) then
-        print *, 'Last element should be 0 but was', data_t_ptr_aux%x
+      print*, 'Checking last element ...', dat_a%x
+      if (dat_a%x .ne. 1) then
+        print *, 'Last element should be 1 but was', dat_a%x
         test_result = .false.
         call list_free(ll)
         return
@@ -118,7 +119,7 @@ program Modular_tests
       type(list_t), pointer :: ll => null()
       type(list_t), pointer :: list_pointer => null()
       type(list_t), pointer :: list_pointer_before => null()
-      type(data_t), target  :: dat_a
+      type(data_t), allocatable :: dat_a
       type(data_t), pointer :: data_t_ptr_aux
 
       integer :: an_integer
@@ -138,14 +139,18 @@ program Modular_tests
       print*, ">>>>> Running Test List random remove Performance"
       test_result = .true.
 
-      call list_init(ll)
       list_size = p_num_of_insertions
 
       ! Insert values
-      do an_integer = 1, p_num_of_insertions
+      allocate(dat_a)
+      dat_a%x = 1
+      call list_init(ll, dat_a)
+      deallocate(dat_a)
+      do an_integer = 2, p_num_of_insertions
+        allocate(dat_a)
         dat_a%x = an_integer
-        data_t_ptr_aux => dat_a
-        call list_insert(ll, DATA=transfer(data_t_ptr_aux, list_data))
+        call list_insert(ll, DATA=dat_a)
+        deallocate(dat_a)
       enddo
 
       ! remove random positions
@@ -162,8 +167,8 @@ program Modular_tests
         ! print *, "trying", random_value_of_remove_node
 
         do 
-          data_t_ptr_aux = transfer(list_get(list_pointer), data_t_ptr_aux)
-          if (data_t_ptr_aux%x == random_value_of_remove_node) then
+          dat_a = list_get(list_pointer)
+          if (dat_a%x == random_value_of_remove_node) then
             ! print *, "removing item ", data_t_ptr_aux%x
             call list_remove(list_pointer, list_pointer_before)
             list_size = list_size -1
