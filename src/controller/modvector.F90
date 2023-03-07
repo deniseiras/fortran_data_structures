@@ -6,14 +6,14 @@ module ModVector
   private
 
   public :: vector_t
-  public :: vector_init
-  public :: vector_free
-  public :: vector_get_num_elements
-  public :: vector_insert
+  public :: init
+  public :: free_memory
+  public :: get_size
+  public :: get_num_elements
+  public :: insert
   public :: vector_put
-  public :: vector_get
-  public :: vector_remove
-
+  public :: get
+  public :: remove
   
 
   ! Vector data type
@@ -21,67 +21,84 @@ module ModVector
     private
     type(data_t), allocatable, dimension(:) :: vector
     integer :: num_elements
-    integer :: curr_index
+    
   end type vector_t
 
 contains
 
 
   ! Initialize vector
-  subroutine vector_init(self, num_elements_input)
+  subroutine init(self, vec_max_size)
     implicit none 
     type(vector_t), intent(inout) :: self
-    integer, intent(in) :: num_elements_input
+    integer, intent(in) :: vec_max_size
 
-    self%num_elements = num_elements_input
-    allocate(self%vector(num_elements_input))
-    self%curr_index = 1
-  end subroutine vector_init
+    self%num_elements = 0
+    allocate(self%vector(vec_max_size))
+  end subroutine init
 
 
   ! Free the entire list and all data, beginning at SELF
-  subroutine vector_free(self)
+  subroutine free_memory(self)
     type(vector_t), intent(inout) :: self
-    deallocate(self%vector)
-    self%curr_index = 1
-  end subroutine vector_free
+
+    if(allocated(self%vector)) deallocate(self%vector)
+    self%num_elements = 0
+  end subroutine free_memory
 
 
-  function vector_get_num_elements(self) result(num_of_elements)
+  function get_size(self) result(size_vec)
     type(vector_t), intent(in) :: self
-    integer :: num_of_elements
-    num_of_elements = self%num_elements
-  end function vector_get_num_elements
+    integer :: size_vec
+    if(allocated(self%vector)) then
+      size_vec = size(self%vector)
+    else
+      size_vec = 0
+    endif
+  end function get_size
+
+
+  function get_num_elements(self) result(num_elements)
+    type(vector_t), intent(in) :: self
+    integer :: num_elements
+    num_elements = self%num_elements
+  end function get_num_elements
 
   ! ToDo ....
 
   ! Insert a value at end of the vector
-  subroutine vector_insert(self, data)
+  subroutine insert(self, data)
     type(vector_t), intent(inout) :: self
     type(data_t), intent(in) :: data
-  end subroutine vector_insert
+
+    self%num_elements = self%num_elements + 1
+    self%vector(self%num_elements) = data
+  end subroutine insert
 
 
   ! Store the encoded data the index_data position
   subroutine vector_put(self, data, data_index)
     type(vector_t), intent(inout) :: self
     type(data_t), intent(in) :: data
-    integer :: data_index
+    integer, intent(in) :: data_index
+    self%vector(data_index) = data
   end subroutine vector_put
 
 
   ! Return the DATA stored in the node SELF
-  function vector_get(self) result(data)
+  function get(self, data_index) result(data)
     type(vector_t), intent(inout) :: self
+    integer, intent(in) :: data_index
     type(data_t) :: data
-  end function vector_get
+    data = self%vector(self%num_elements)
+  end function get
 
 
     ! Insert a list node after SELF containing DATA (optional)
-  subroutine vector_remove(self, data)
+  subroutine remove(self, data_index)
     type(vector_t), intent(inout) :: self
-    type(data_t), intent(in) :: data
-  end subroutine vector_remove
+    integer, intent(in) :: data_index
+  end subroutine remove
 
 
 end module ModVector
