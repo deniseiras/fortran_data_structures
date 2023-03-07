@@ -63,7 +63,7 @@ contains
 
   ! Return the next node after SELF
   function next(self) result(next_returned)
-    type(list_t), pointer :: self
+    type(list_t), pointer, intent(in) :: self
     type(list_t), pointer :: next_returned
     next_returned => self%next
   end function next
@@ -111,10 +111,10 @@ contains
     ! Insert a list node after SELF containing DATA (optional)
   subroutine remove(self, before)
     type(list_t), pointer :: self
-    type(list_t), pointer :: before
+    type(list_t), pointer, optional :: before
 
     deallocate(self%data)
-    before%next => self%next
+    if(present(before)) before%next => self%next
 
   end subroutine remove
 

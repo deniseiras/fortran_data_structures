@@ -13,8 +13,10 @@ program Unity_tests
   test_errors_sum = 0
   test_errors_sum = test_errors_sum + test_list_init()
   test_errors_sum = test_errors_sum + test_list_inserts()
+  test_errors_sum = test_errors_sum + test_list_removes()
   test_errors_sum = test_errors_sum + test_vector_init()
   test_errors_sum = test_errors_sum + test_vector_inserts()
+  ! test_errors_sum = test_errors_sum + test_vector_removes()
   
   print *, "" 
   if (test_errors_sum == 0) then
@@ -108,6 +110,108 @@ program Unity_tests
 
     end function
 
+    integer function test_list_removes() result(test_error)
+      use Modlist
+      implicit none 
+
+      type(list_t), pointer :: ll, node_curr, node_before => null()
+      type(data_t), allocatable :: dat_x
+      type(data_t) :: dat_test
+      integer :: test_value
+
+      print*, ""
+      print*, ">>>>> Running Test List removes elements"
+      test_error = 0
+
+      allocate(dat_x)
+      dat_x%x = 10
+      call init(ll, dat_x)
+      print *, 'Initializing list with data:', dat_x%x
+      deallocate(dat_x)
+
+      allocate(dat_x)
+      dat_x%x = 20
+      call insert(ll, dat_x)
+      print *, 'Inserting node with data:', dat_x%x
+      deallocate(dat_x)
+
+      allocate(dat_x)
+      dat_x%x = 30
+      call insert(ll, dat_x)
+      print *, 'Inserting node with data:', dat_x%x
+      deallocate(dat_x)
+
+      allocate(dat_x)
+      dat_x%x = 40
+      call insert(ll, dat_x)
+      print *, 'Inserting node with data:', dat_x%x
+      deallocate(dat_x)
+
+
+      print *, 'removes last element'
+      node_curr => ll
+      do 
+        if (.not. associated(next(node_curr))) exit
+        node_before => node_curr
+        node_curr => next(node_curr)
+      enddo
+      call remove(node_curr, node_before)
+
+      print *, 'Testing nodes'      
+      node_curr => ll
+      test_value = 40
+      do
+        dat_test = get(node_curr)
+        print *, 'Checking node ', dat_test%x
+        if (dat_test%x .ne. test_value) then
+          print *, '!!!!! TEST FAILED !!!!! Node data should be: ',test_value,' but was', dat_test%x
+          call free_memory(ll)
+          test_error = 1
+          return
+        endif
+        if (.not. associated(next(node_curr))) exit
+        node_curr => next(node_curr)
+        test_value = test_value - 10
+      enddo
+      
+      print *, 'removes second element'
+      node_curr => next(ll)
+      call remove(node_curr, ll)
+      node_curr => ll
+      dat_test = get(node_curr)
+      print *, 'Checking node ', dat_test%x
+      test_value = 40
+      if (dat_test%x .ne. test_value) then
+        print *, '!!!!! TEST FAILED !!!!! Node data should be: ',test_value,' but was', dat_test%x
+        call free_memory(ll)
+        test_error = 1
+        return
+      endif
+      node_curr => next(node_curr)
+      dat_test = get(node_curr)
+      print *, 'Checking node ', dat_test%x
+      test_value = 20
+      if (dat_test%x .ne. test_value) then
+        print *, '!!!!! TEST FAILED !!!!! Node data should be: ',test_value,' but was', dat_test%x
+        call free_memory(ll)
+        test_error = 1
+        return
+      endif
+
+      print *, 'removes first element'
+      node_curr => next(ll)
+      call remove(ll)
+      dat_test = get(node_curr)
+      print *, 'Checking node ', dat_test%x
+      test_value = 20
+      if (dat_test%x .ne. test_value) then
+        print *, '!!!!! TEST FAILED !!!!! Node data should be: ',test_value,' but was', dat_test%x
+        call free_memory(ll)
+        test_error = 1
+        return
+      endif
+
+    end function
 
     ! Vector Tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     !
@@ -223,5 +327,6 @@ program Unity_tests
 
     end function
 
+    
 
 end program Unity_tests
