@@ -81,17 +81,17 @@ contains
     type(vector_t), intent(inout) :: self
     type(data_t), intent(in) :: data
     integer, intent(in) :: data_index
-    
+
     self%vector(data_index) = data
   end subroutine vector_put
 
 
-  ! Return the DATA stored in the node SELF
+  ! Return the DATA stored in data_index
   function get(self, data_index) result(data)
     type(vector_t), intent(inout) :: self
     integer, intent(in) :: data_index
     type(data_t) :: data
-    data = self%vector(self%num_elements)
+    data = self%vector(data_index)
   end function get
 
 

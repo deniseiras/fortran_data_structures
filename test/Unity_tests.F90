@@ -275,11 +275,9 @@ program Unity_tests
       print *, 'Initializing Vector with size = ', p_vector_size
       call init(vec, p_vector_size)
 
-      ! allocate(dat_to_insert)
       dat_to_insert%x = 10
       print *, 'Inserting vector element with: ', dat_to_insert%x
       call insert(vec, dat_to_insert)
-      ! deallocate(dat_to_insert)
 
       print *, 'Testing num_elements = 1'
       if(get_num_elements(vec) /= 1) then
@@ -298,11 +296,9 @@ program Unity_tests
         return
       endif
 
-      ! allocate(dat_to_insert)
       dat_to_insert%x = 20
       print *, 'Inserting vector element with: ', dat_to_insert%x
       call insert(vec, dat_to_insert)
-      ! deallocate(dat_to_insert)
 
       print *, 'Testing num_elements = 2'
       if(get_num_elements(vec) /= 2) then
@@ -343,26 +339,18 @@ program Unity_tests
       print *, 'Initializing Vector with size = ', p_vector_size
       call init(vec, p_vector_size)
 
-      ! allocate(dat_to_insert)
       dat_to_insert%x = 10
       print *, 'Inserting vector element with: ', dat_to_insert%x
       call insert(vec, dat_to_insert)
-      ! deallocate(dat_to_insert)
-      ! allocate(dat_to_insert)
       dat_to_insert%x = 20
       print *, 'Inserting vector element with: ', dat_to_insert%x
       call insert(vec, dat_to_insert)
-      ! deallocate(dat_to_insert)
-      ! allocate(dat_to_insert)
       dat_to_insert%x = 30
       print *, 'Inserting vector element with: ', dat_to_insert%x
       call insert(vec, dat_to_insert)
-      ! deallocate(dat_to_insert)
-      ! allocate(dat_to_insert)
       dat_to_insert%x = 40
       print *, 'Inserting vector element with: ', dat_to_insert%x
       call insert(vec, dat_to_insert)
-      ! deallocate(dat_to_insert)
 
       print *, 'Testing remove last '
       call remove(vec, 4)
@@ -398,7 +386,7 @@ program Unity_tests
         return
       endif
       print *, 'Testing elements'
-      test_value = 40
+      test_value = 10
       dat_test = get(vec, 1)
       if(dat_test%x /= test_value) then
         print *, '!!!!! TEST FAILED !!!!! First element should be: ', test_value, ' but was', dat_test%x
@@ -406,7 +394,7 @@ program Unity_tests
         call free_memory(vec)
         return
       endif
-      test_value = 20
+      test_value = 30
       dat_test = get(vec, 2)
       if(dat_test%x /= test_value) then
         print *, '!!!!! TEST FAILED !!!!! First element should be: ', test_value, ' but was', dat_test%x
@@ -426,7 +414,7 @@ program Unity_tests
         return
       endif
       print *, 'Testing elements'
-      test_value = 20
+      test_value = 30
       dat_test = get(vec, 1)
       if(dat_test%x /= test_value) then
         print *, '!!!!! TEST FAILED !!!!! First element should be: ', test_value, ' but was', dat_test%x
