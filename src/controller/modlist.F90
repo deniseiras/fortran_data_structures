@@ -6,17 +6,17 @@ module Modlist
   private
 
   public :: list_t
-  public :: list_data
-  public :: list_init
-  public :: list_free
-  public :: list_insert
-  public :: list_put
-  public :: list_get
-  public :: list_next
-  public :: list_remove
+  ! public :: list_data
+  public :: init
+  public :: free_memory
+  public :: insert
+  public :: put
+  public :: get
+  public :: next
+  public :: remove
 
   ! A public variable to use as a MOLD for transfer()
-  type(data_t), dimension(:), allocatable :: list_data
+  ! type(data_t), dimension(:), allocatable :: list_data
 
   ! Linked list node data typetype(data_t), dimension(:), intent(in), optional :: data
   type :: list_t
@@ -29,7 +29,7 @@ contains
 
 
   ! Initialize a head node SELF and optionally store the provided DATA.
-  subroutine list_init(self, data)
+  subroutine init(self, data)
     type(list_t), intent(inout), pointer :: self
     type(data_t), intent(in) :: data
 
@@ -39,11 +39,11 @@ contains
     allocate(self%data)
     self%data = data
 
-  end subroutine list_init
+  end subroutine init
 
 
   ! Free the entire list and all data, beginning at SELF
-  subroutine list_free(self)
+  subroutine free_memory(self)
     type(list_t), pointer :: self
     type(list_t), pointer :: current
     type(list_t), pointer :: next
@@ -58,19 +58,19 @@ contains
        nullify(current)
        current => next
     end do
-  end subroutine list_free
+  end subroutine free_memory
 
 
   ! Return the next node after SELF
-  function list_next(self) result(next)
-    type(list_t), pointer :: self
-    type(list_t), pointer :: next
-    next => self%next
-  end function list_next
+  function next(self) result(next_returned)
+    type(list_t), pointer, intent(in) :: self
+    type(list_t), pointer :: next_returned
+    next_returned => self%next
+  end function next
 
 
   ! Insert a list node after SELF containing DATA (optional)
-  subroutine list_insert(self, data)
+  subroutine insert(self, data)
     type(list_t), intent(inout), pointer :: self
     type(data_t), intent(in), optional :: data
     type(list_t), pointer :: new
@@ -84,11 +84,11 @@ contains
 
     new%next => self
     self => new
-  end subroutine list_insert
+  end subroutine insert
 
 
   ! Store the encoded DATA in list node SELF
-  subroutine list_put(self, data)
+  subroutine put(self, data)
     type(list_t), pointer :: self
     type(data_t), allocatable, intent(in) :: data
 
@@ -97,25 +97,25 @@ contains
     end if
     allocate(self%data)
     self%data = data
-  end subroutine list_put
+  end subroutine put
 
 
   ! Return the DATA stored in the node SELF
-  function list_get(self) result(data)
+  function get(self) result(data)
     type(list_t), pointer :: self
     type(data_t) :: data
     data = self%data
-  end function list_get
+  end function get
 
 
     ! Insert a list node after SELF containing DATA (optional)
-  subroutine list_remove(self, before)
+  subroutine remove(self, before)
     type(list_t), pointer :: self
-    type(list_t), pointer :: before
+    type(list_t), pointer, optional :: before
 
     deallocate(self%data)
-    before%next => self%next
+    if(present(before)) before%next => self%next
 
-  end subroutine list_remove
+  end subroutine remove
 
 end module Modlist
