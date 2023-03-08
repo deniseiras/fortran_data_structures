@@ -340,17 +340,15 @@ program Unity_tests
       call init(vec, p_vector_size)
 
       dat_to_insert%x = 10
-      print *, 'Inserting vector element with: ', dat_to_insert%x
+      print *, 'Insertting elements in vector:' 
       call insert(vec, dat_to_insert)
       dat_to_insert%x = 20
-      print *, 'Inserting vector element with: ', dat_to_insert%x
       call insert(vec, dat_to_insert)
       dat_to_insert%x = 30
-      print *, 'Inserting vector element with: ', dat_to_insert%x
       call insert(vec, dat_to_insert)
       dat_to_insert%x = 40
-      print *, 'Inserting vector element with: ', dat_to_insert%x
       call insert(vec, dat_to_insert)
+      call print_all(vec)
 
       print *, 'Testing remove last '
       call remove(vec, 4)
@@ -363,6 +361,7 @@ program Unity_tests
         return
       endif
       print *, 'Testing elements'
+      call print_all(vec)
       test_value = 10
       do index_element = 1, 3
         dat_test = get(vec, index_element)
@@ -386,6 +385,7 @@ program Unity_tests
         return
       endif
       print *, 'Testing elements'
+      call print_all(vec)
       test_value = 10
       dat_test = get(vec, 1)
       if(dat_test%x /= test_value) then
@@ -414,6 +414,7 @@ program Unity_tests
         return
       endif
       print *, 'Testing elements'
+      call print_all(vec)
       test_value = 30
       dat_test = get(vec, 1)
       if(dat_test%x /= test_value) then

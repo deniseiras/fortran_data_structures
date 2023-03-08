@@ -21,7 +21,7 @@ module Modlist
   ! Linked list node data typetype(data_t), dimension(:), intent(in), optional :: data
   type :: list_t
      private
-     type(data_t), allocatable :: data
+     type(data_t) :: data
      type(list_t), pointer :: next => null()
   end type list_t
 
@@ -36,7 +36,7 @@ contains
     allocate(self)
     nullify(self%next)
 
-    allocate(self%data)
+    !allocate(self%data)
     self%data = data
 
   end subroutine init
@@ -51,9 +51,9 @@ contains
     current => self
     do while (associated(current))
        next => current%next
-       if (allocated(current%data)) then
-          deallocate(current%data)
-       end if
+       !if (allocated(current%data)) then
+       !  deallocate(current%data)
+       !end if
        deallocate(current)
        nullify(current)
        current => next
@@ -78,7 +78,7 @@ contains
     allocate(new)
 
     if (present(data)) then
-       allocate(new%data)
+    !   allocate(new%data)
        new%data = data
     end if
 
@@ -92,10 +92,10 @@ contains
     type(list_t), pointer :: self
     type(data_t), allocatable, intent(in) :: data
 
-    if (allocated(self%data)) then
-       deallocate(self%data)
-    end if
-    allocate(self%data)
+    !if (allocated(self%data)) then
+    !   deallocate(self%data)
+    !end if
+    !allocate(self%data)
     self%data = data
   end subroutine put
 
@@ -113,7 +113,7 @@ contains
     type(list_t), pointer :: self
     type(list_t), pointer, optional :: before
 
-    deallocate(self%data)
+    !deallocate(self%data)
     if(present(before)) before%next => self%next
 
   end subroutine remove

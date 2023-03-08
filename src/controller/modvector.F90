@@ -14,6 +14,7 @@ module ModVector
   public :: vector_put
   public :: get
   public :: remove
+  public :: print_all
   
 
   ! Vector data type
@@ -94,8 +95,26 @@ contains
     data = self%vector(data_index)
   end function get
 
+  subroutine print_all(self) 
+    type(vector_t), intent(inout) :: self
+    integer :: data_index
+    integer, parameter :: views = 5
+    write(*, '(A8)', advance='NO') 'vector = ('
+    do data_index = 1, min(self%num_elements, views)
+      write(*,'(i8, "," )',advance='NO')  self%vector(data_index)%x
+    end do
+    if (self%num_elements > views) then
+      ! print last elements 
+      write(*,'(A5)',advance='NO') ' ... '
+      do data_index = max(self%num_elements - views, views +1 ), self%num_elements
+        write(*,'(i8, "," )',advance='NO')  self%vector(data_index)%x
+      end do
+    endif
+    write(*, '(A2)', advance='YES') ' )'
 
-    ! Insert a list node after SELF containing DATA (optional)
+  end subroutine print_all
+
+
   subroutine remove(self, data_index)
     type(vector_t), intent(inout) :: self
     integer, intent(in) :: data_index
@@ -105,11 +124,12 @@ contains
       print *, '***** trying to remove index ', data_index,' from an empty vector. Ignoring'
       return
     endif
-
-    self%vector(data_index:size(self%vector)-1) = self%vector(data_index+1:size(self%vector))
+    self%vector(data_index:self%num_elements-1) = self%vector(data_index+1:self%num_elements)  ! Bidu
     self%num_elements = self%num_elements -1
 
   end subroutine remove
+
+  
 
 
 end module ModVector

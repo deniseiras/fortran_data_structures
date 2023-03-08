@@ -6,12 +6,22 @@ program Modular_tests
   implicit none
 
   logical all_tests_passed 
+  
+  integer, parameter :: p_num_of_insertions = 1000000
+  integer, parameter :: p_num_of_random_deletions  = 100
+
+  real, parameter :: p_insert_max_time_allowed = 0.2
+  real, parameter :: p_visit_max_time_allowed  = 0.1
+  real, parameter :: p_remove_max_time_allowed = 10.0
+
 
   print*, ">>>>> Running Modular Tests"
   
   all_tests_passed = .true.
   all_tests_passed = all_tests_passed .and. test_insert_performance()
   all_tests_passed = all_tests_passed .and. test_list_random_remove_performance()
+  all_tests_passed = all_tests_passed .and. test_vector_insert_performance()
+  all_tests_passed = all_tests_passed .and. test_vector_random_remove_performance()
 
   if (all_tests_passed) then
     print*, ">>>>> All tests OK !"
@@ -34,9 +44,6 @@ program Modular_tests
       type(data_t), allocatable :: dat_a
 
       integer :: an_integer
-      integer, parameter :: p_num_of_insertions = 1000000
-      real, parameter :: p_insert_max_time_allowed = 0.2
-      real, parameter :: p_visit_max_time_allowed = 0.1
       real time_initial, time_final 
 
 
@@ -108,8 +115,7 @@ program Modular_tests
 
       call free_memory(ll)
       return
-
-    end function
+    end function test_insert_performance
 
 
     logical function test_list_random_remove_performance() result(test_result)
@@ -123,13 +129,6 @@ program Modular_tests
 
 
       integer :: an_integer
-      integer, parameter :: p_num_of_insertions = 1000000
-      integer, parameter :: p_num_of_random_deletions  = 100
-
-      real, parameter :: p_insert_max_time_allowed = 0.2
-      real, parameter :: p_visit_max_time_allowed  = 0.1
-      real, parameter :: p_remove_max_time_allowed = 10.0
-      
       real :: time_initial, time_final 
 
       integer :: list_size, random_value_of_remove_node 
@@ -193,20 +192,131 @@ program Modular_tests
       call free_memory(ll)
       return
 
-    end function
+    end function test_list_random_remove_performance
 
 
-! TODO
     logical function test_vector_insert_performance() result(test_result)
       use ModVector
       implicit none
 
-    end function
+      type(vector_t) :: vec 
+      type(data_t) :: dat_a
+
+      integer :: an_integer, data_index
+      real time_initial, time_final 
+
+      print*, ">>>>> Running Test Vector Insert and Visit Performance"
+      test_result = .true.
+
+      call cpu_time(time_initial)
+      call init(vec, p_num_of_insertions)
+      do an_integer = 1, p_num_of_insertions
+        dat_a%x = an_integer
+        call insert(vec, DATA=dat_a)
+      enddo
+      call cpu_time(time_final)
+      call print_all(vec)
+      
+      ! check performance
+      print *, 'Insert Max time = ', p_insert_max_time_allowed, '; Run time = ', time_final-time_initial
+      if (time_final-time_initial > p_insert_max_time_allowed) then
+        print *, 'Insert Max time exceeded!!!'
+        test_result = .false.
+        call free_memory(vec)
+        return
+      endif
+
+      data_index=1
+      dat_a = get(vec,data_index)
+      print*, 'Checking Head element ...', dat_a%x
+      if (dat_a%x /= 1) then
+        print *, 'Head element should be 1 but was', dat_a%x
+        test_result = .false.
+        call free_memory(vec)
+        return
+      endif
+
+      data_index=p_num_of_insertions
+      dat_a = get(vec,data_index)
+      print*, 'Checking last element ...', dat_a%x
+      if(dat_a%x /= p_num_of_insertions) then
+        print *, 'Last element should be: ', p_num_of_insertions, ' but was', dat_a%x
+        test_result = .false.
+        call free_memory(vec)
+        return
+      endif
+
+      ! do a quick visit to every element
+      call cpu_time(time_initial)
+      do an_integer = 1, get_num_elements(vec)
+        dat_a = get(vec,data_index)
+      enddo
+      call cpu_time(time_final)
+
+
+      print *, 'Visit Max time = ', p_visit_max_time_allowed, '; Run time = ', time_final-time_initial
+      if (time_final-time_initial > p_visit_max_time_allowed) then
+        print *, 'Visit Max time exceeded!!!'
+        test_result = .false.
+        call free_memory(vec)
+        return
+      endif
+
+      call free_memory(vec)
+      return
+
+    end function test_vector_insert_performance
 
     logical function test_vector_random_remove_performance() result(test_result)
       use ModVector
       implicit none
+      type(vector_t) :: vec
+      type(data_t) :: dat_a
 
-    end function
+      integer :: an_integer
+      real :: time_initial, time_final 
+
+      integer :: data_index, random_value_of_remove_node 
+      real :: random_real_value_aux
+      integer,parameter :: seed = 86456
+      print*, ">>>>> Running Test vector random remove Performance"
+      test_result = .true.
+      ! Insert values
+      dat_a%x = 1
+      call init(vec, p_num_of_insertions)
+      do an_integer = 1, p_num_of_insertions
+        call insert(vec, DATA=dat_a)
+        dat_a%x = an_integer+1
+      enddo
+      call print_all(vec)
+      ! remove random positions
+      print *, "removing ", p_num_of_random_deletions, " elements of vector of size ", p_num_of_insertions
+      call random_init(.true. , .true.)
+      call cpu_time(time_initial)
+      do an_integer = 1, p_num_of_random_deletions
+        call random_number(random_real_value_aux)
+        random_value_of_remove_node = 1+int(random_real_value_aux * (p_num_of_insertions-an_integer))
+        !random_value_of_remove_node = max(random_value_of_remove_node, 1)
+        data_index= random_value_of_remove_node
+        ! print*, "removing node of index = ", data_index
+        ! print*, "data_index=",data_index
+        call remove(vec, data_index)
+      enddo
+      call cpu_time(time_final)
+      call print_all(vec)
+
+      print *, 'Remove Max time = ', p_remove_max_time_allowed, '; Run time = ', time_final-time_initial
+      if (time_final-time_initial > p_remove_max_time_allowed) then
+        print *, 'Remove Max time exceeded!!!'
+        test_result = .false.
+        call free_memory(vec)
+        return
+      endif
+
+      call free_memory(vec)
+      return
+
+    end function test_vector_random_remove_performance
+
   
 end program Modular_tests
