@@ -52,7 +52,7 @@ jobs:
 
       - name: Run Modular Tests - DEBUG
         run: |
-          cd test && ./run_tests_with_type_of_param.sh Modular_tests_debug
+          make runUnityTest
 
 
 
@@ -65,4 +65,4 @@ jobs:
       
       - name: Run Modular Tests - Performance
         run: |
-          cd test && ./run_tests_with_type_of_param.sh Modular_tests_O3
+          MODULAR_TESTS_APP_NAME=Modular_tests_O3 make runModularTest
