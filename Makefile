@@ -4,7 +4,7 @@
 
 # Compiler settings - Can be customized.
 CC = gfortran
-DEBUG_FLAGS= -g -O0 -Wall -fcheck=all
+DEBUG_FLAGS= -g -O0 -J obj -Wall -fcheck=all
 FFLAGS?=${DEBUG_FLAGS}
 LDFLAGS = 
 
@@ -34,18 +34,16 @@ RM = rm -rf
 ####################### Targets beginning here #########################
 ########################################################################
 
-all: $(UNITY_TESTS) $(MODULAR_TESTS)
+all: $(UNITY_TESTS_APP) $(MODULAR_TESTS_APP)
 
 # Builds the app Unity Tests
-$(UNITY_TESTS): $(OBJ_TEST) $(OBJDIR)/model/moddata.o $(OBJDIR)/controller/modvector.o $(OBJDIR)/controller/modlist.o
+$(UNITY_TESTS_APP): ${TESTDIR}/${UNITY_TESTS}$(EXT) $(OBJ_TEST) $(OBJDIR)/model/moddata.o $(OBJDIR)/controller/modlist.o $(OBJDIR)/controller/modvector.o
 	@mkdir -p $(OBJDIR)/test
-	$(CC) $(FFLAGS) -o ${UNITY_TESTS_APP} ${TESTDIR}/${UNITY_TESTS}$(EXT) $^ $(LDFLAGS)
-
+	$(CC) $(FFLAGS) -o ${UNITY_TESTS_APP} $^ $(LDFLAGS)
 
 # Builds the app Modular Tests
-$(MODULAR_TESTS): $(OBJ_TEST) $(OBJDIR)/model/moddata.o $(OBJDIR)/controller/modvector.o $(OBJDIR)/controller/modlist.o
-	$(CC) $(FFLAGS) -o ${MODULAR_TESTS_APP} ${TESTDIR}/${MODULAR_TESTS}$(EXT) $^ $(LDFLAGS)
-
+$(MODULAR_TESTS_APP): ${TESTDIR}/${MODULAR_TESTS}$(EXT)  $(OBJ_TEST) $(OBJDIR)/model/moddata.o $(OBJDIR)/controller/modlist.o $(OBJDIR)/controller/modvector.o
+	$(CC) $(FFLAGS) -o ${MODULAR_TESTS_APP} $^ $(LDFLAGS)
 
 $(OBJDIR)/model/moddata.o: $(SRCDIR)/model/moddata.F90
 	@mkdir -p $(OBJDIR)/model
@@ -68,4 +66,12 @@ $(OBJDIR)/controller/modvector.o: $(SRCDIR)/controller/modvector.F90 $(OBJDIR)/m
 
 clean:
 	$(RM) $(OBJ) $(OBJTEST) $(MOD) ${MODULAR_TESTS_APP} ${UNITY_TESTS_APP}
+
+run: runUnityTest runModularTest
+
+runUnityTest:
+	(cd test && ./run_tests_with_type_of_param.sh ${UNITY_TESTS_APP_NAME})
+
+runModularTest:
+	(cd test && ./run_tests_with_type_of_param.sh ${MODULAR_TESTS_APP_NAME})
 

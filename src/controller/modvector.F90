@@ -115,21 +115,29 @@ contains
   end subroutine print_all
 
 
-  subroutine remove(self, data_index)
+  function remove(self, data_to_remove) result(is_removed)
     type(vector_t), intent(inout) :: self
-    integer, intent(in) :: data_index
+    type(data_t), intent(in) :: data_to_remove
+    integer :: index
+    logical :: is_removed
 
-
+    is_removed = .false.
     if (self%num_elements == 0) then
-      print *, '***** trying to remove index ', data_index,' from an empty vector. Ignoring'
+      print *, '***** trying to remove from an empty vector. Ignoring'
       return
     endif
-    self%vector(data_index:self%num_elements-1) = self%vector(data_index+1:self%num_elements)  ! Bidu
-    self%num_elements = self%num_elements -1
 
-  end subroutine remove
+    do index = 1, self%num_elements
+      if (self%vector(index)%x == data_to_remove%x) then
+        self%vector(index:self%num_elements-1) = self%vector(index+1:self%num_elements)  ! Bidu
+        self%num_elements = self%num_elements -1
+        is_removed = .true.
+      endif
+    enddo
 
-  
+  end function remove
+
+
 
 
 end module ModVector

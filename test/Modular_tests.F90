@@ -124,8 +124,7 @@ program Modular_tests
 
       type(list_t), pointer :: ll => null()
       type(list_t), pointer :: list_pointer => null()
-      type(list_t), pointer :: list_pointer_before => null()
-      type(data_t), allocatable :: dat_a
+      type(data_t) :: dat_a, data_to_remove
 
 
       integer :: an_integer
@@ -134,6 +133,7 @@ program Modular_tests
       integer :: list_size, random_value_of_remove_node 
       real :: random_real_value_aux
       integer,parameter :: seed = 86456
+      logical :: is_removed
   
       print*, ">>>>> Running Test List random remove Performance"
       test_result = .true.
@@ -141,15 +141,11 @@ program Modular_tests
       list_size = p_num_of_insertions
 
       ! Insert values
-      allocate(dat_a)
       dat_a%x = 1
       call init(ll, dat_a)
-      deallocate(dat_a)
       do an_integer = 2, p_num_of_insertions
-        allocate(dat_a)
         dat_a%x = an_integer
         call insert(ll, DATA=dat_a)
-        deallocate(dat_a)
       enddo
 
       ! remove random positions
@@ -159,24 +155,12 @@ program Modular_tests
       
       do an_integer = 1, p_num_of_random_deletions
         list_pointer => next(ll)
-        list_pointer_before => list_pointer
         call random_number(random_real_value_aux)
         random_value_of_remove_node = int(random_real_value_aux * list_size)
-        random_value_of_remove_node = max(random_value_of_remove_node, 1)
+        data_to_remove%x = max(random_value_of_remove_node, 1)
         ! print *, "trying", random_value_of_remove_node
-
-        do 
-          dat_a = get(list_pointer)
-          if (dat_a%x == random_value_of_remove_node) then
-            ! print *, "removing item ", data_t_ptr_aux%x
-            call remove(list_pointer, list_pointer_before)
-            list_size = list_size -1
-            exit
-          endif
-          list_pointer_before => list_pointer
-          list_pointer => next(list_pointer)
-          if (.not. associated(list_pointer)) exit
-        enddo
+        is_removed = remove(list_pointer, data_to_remove)
+        if(is_removed) list_size = list_size -1
       enddo
       call cpu_time(time_final)
 
@@ -276,9 +260,12 @@ program Modular_tests
       integer :: an_integer
       real :: time_initial, time_final 
 
-      integer :: data_index, random_value_of_remove_node 
+      type(data_t) :: data_to_remove
+      integer :: random_value_of_remove_node 
       real :: random_real_value_aux
       integer,parameter :: seed = 86456
+      logical :: dummy
+
       print*, ">>>>> Running Test vector random remove Performance"
       test_result = .true.
       ! Insert values
@@ -297,10 +284,9 @@ program Modular_tests
         call random_number(random_real_value_aux)
         random_value_of_remove_node = 1+int(random_real_value_aux * (p_num_of_insertions-an_integer))
         !random_value_of_remove_node = max(random_value_of_remove_node, 1)
-        data_index= random_value_of_remove_node
-        ! print*, "removing node of index = ", data_index
-        ! print*, "data_index=",data_index
-        call remove(vec, data_index)
+        data_to_remove%x = random_value_of_remove_node
+        ! print*, "removing data_to_remove%x
+        dummy = remove(vec, data_to_remove)
       enddo
       call cpu_time(time_final)
       call print_all(vec)

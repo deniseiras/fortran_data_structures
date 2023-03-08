@@ -109,13 +109,33 @@ contains
 
 
     ! Insert a list node after SELF containing DATA (optional)
-  subroutine remove(self, before)
-    type(list_t), pointer :: self
-    type(list_t), pointer, optional :: before
+  function remove(self, data_to_remove) result(is_removed)
+    type(list_t), pointer, intent(inout) :: self
+    type(list_t), pointer ::  node_curr, node_before
+    ! ToDo : create == comparison in type object
+    type(data_t) :: data_to_remove
+    logical :: is_removed
 
-    !deallocate(self%data)
-    if(present(before)) before%next => self%next
+    is_removed = .false.
+    if (self%data%x == data_to_remove%x) then
+      is_removed = .true.
+      self => next(self)  ! could be null or other
+      return
+    endif
+    
+    ! look for nexts data_to_remove
+    node_before => self
+    node_curr => next(self)
+    do 
+      if (node_curr%data%x == data_to_remove%x) then
+        node_before%next => next(node_curr)
+        is_removed = .true.
+        return
+      endif
+      node_before => node_curr
+      node_curr => next(node_curr)
+    enddo
 
-  end subroutine remove
+  end function remove
 
 end module Modlist

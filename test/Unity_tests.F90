@@ -114,48 +114,32 @@ program Unity_tests
       use Modlist
       implicit none 
 
-      type(list_t), pointer :: ll, node_curr, node_before => null()
-      type(data_t), allocatable :: dat_x
+      type(list_t), pointer :: ll, node_curr  => null()
+      type(data_t) :: dat_x
       type(data_t) :: dat_test
       integer :: test_value
+      logical :: is_removed 
 
       print*, ""
       print*, ">>>>> Running Test List removes elements"
       test_error = 0
 
-      allocate(dat_x)
       dat_x%x = 10
       call init(ll, dat_x)
       print *, 'Initializing list with data:', dat_x%x
-      deallocate(dat_x)
-
-      allocate(dat_x)
       dat_x%x = 20
       call insert(ll, dat_x)
       print *, 'Inserting node with data:', dat_x%x
-      deallocate(dat_x)
-
-      allocate(dat_x)
       dat_x%x = 30
       call insert(ll, dat_x)
       print *, 'Inserting node with data:', dat_x%x
-      deallocate(dat_x)
-
-      allocate(dat_x)
       dat_x%x = 40
       call insert(ll, dat_x)
       print *, 'Inserting node with data:', dat_x%x
-      deallocate(dat_x)
-
 
       print *, 'removes last element'
-      node_curr => ll
-      do 
-        if (.not. associated(next(node_curr))) exit
-        node_before => node_curr
-        node_curr => next(node_curr)
-      enddo
-      call remove(node_curr, node_before)
+      dat_x%x = 10
+      is_removed = remove(ll, dat_x)
 
       print *, 'Testing nodes'      
       node_curr => ll
@@ -173,10 +157,17 @@ program Unity_tests
         node_curr => next(node_curr)
         test_value = test_value - 10
       enddo
+
+      if(test_value == 10 ) then
+        print *, '!!!!! TEST FAILED !!!!! last element not removed'
+        call free_memory(ll)
+        test_error = 1
+        return
+      endif
       
       print *, 'removes second element'
-      node_curr => next(ll)
-      call remove(node_curr, ll)
+      dat_x%x = 30
+      is_removed = remove(ll, dat_x)
       node_curr => ll
       dat_test = get(node_curr)
       print *, 'Checking node ', dat_test%x
@@ -199,13 +190,24 @@ program Unity_tests
       endif
 
       print *, 'removes first element'
-      node_curr => next(ll)
-      call remove(ll)
+      dat_x%x = 40
+      is_removed = remove(ll, dat_x)
+      node_curr => ll
       dat_test = get(node_curr)
       print *, 'Checking node ', dat_test%x
       test_value = 20
       if (dat_test%x /= test_value) then
         print *, '!!!!! TEST FAILED !!!!! Node data should be: ',test_value,' but was', dat_test%x
+        call free_memory(ll)
+        test_error = 1
+        return
+      endif
+
+      print *, 'removes the only one element '
+      dat_x%x = 20
+      is_removed = remove(ll, dat_x)
+      if (associated(ll)) then
+        print *, '!!!!! TEST FAILED !!!!! List should not contains elements'
         call free_memory(ll)
         test_error = 1
         return
@@ -327,10 +329,11 @@ program Unity_tests
       implicit none 
 
       type(vector_t) :: vec
-      type(data_t) :: dat_to_insert
+      type(data_t) :: dat_to_insert, dat_to_remove
       type(data_t) :: dat_test
       integer, parameter :: p_vector_size = 1000000
       integer :: num_elements_test, index_element, test_value
+      logical :: dummy
       
       print*, ""
       print*, ">>>>> Running Test Vector Removes elements"
@@ -351,7 +354,8 @@ program Unity_tests
       call print_all(vec)
 
       print *, 'Testing remove last '
-      call remove(vec, 4)
+      dat_to_remove%x = 40
+      dummy = remove(vec, dat_to_remove)
       num_elements_test = 3
       print *, 'Testing num_elements = ', num_elements_test
       if(get_num_elements(vec) /= num_elements_test) then
@@ -375,7 +379,8 @@ program Unity_tests
       enddo
 
       print *, 'Testing remove index 2'
-      call remove(vec, 2)
+      dat_to_remove%x = 20
+      dummy = remove(vec, dat_to_remove)
       num_elements_test = 2
       print *, 'Testing num_elements = ', num_elements_test
       if(get_num_elements(vec) /= num_elements_test) then
@@ -404,7 +409,8 @@ program Unity_tests
       endif
 
       print *, 'Testing remove index 1'
-      call remove(vec, 1)
+      dat_to_remove%x = 10
+      dummy = remove(vec, dat_to_remove)
       num_elements_test = 1
       print *, 'Testing num_elements = ', num_elements_test
       if(get_num_elements(vec) /= num_elements_test) then
