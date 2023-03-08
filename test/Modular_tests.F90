@@ -10,7 +10,7 @@ program Modular_tests
   print*, ">>>>> Running Modular Tests"
   
   all_tests_passed = .true.
-  all_tests_passed = all_tests_passed .and. test_list_insert_performance()
+  all_tests_passed = all_tests_passed .and. test_insert_performance()
   all_tests_passed = all_tests_passed .and. test_list_random_remove_performance()
 
   if (all_tests_passed) then
@@ -25,7 +25,7 @@ program Modular_tests
   contains 
 
 
-    logical function test_list_insert_performance() result(test_result)
+    logical function test_insert_performance() result(test_result)
       use Modlist
       implicit none
 
@@ -48,12 +48,12 @@ program Modular_tests
       call cpu_time(time_initial)
       allocate(dat_a)
       dat_a%x = 1
-      call list_init(ll, dat_a)
+      call init(ll, dat_a)
       deallocate(dat_a)
       do an_integer = 2, p_num_of_insertions
         allocate(dat_a)
         dat_a%x = an_integer
-        call list_insert(ll, DATA=dat_a)
+        call insert(ll, DATA=dat_a)
         deallocate(dat_a)
       enddo
       call cpu_time(time_final)
@@ -63,17 +63,17 @@ program Modular_tests
       if (time_final-time_initial > p_insert_max_time_allowed) then
         print *, 'Insert Max time exceeded!!!'
         test_result = .false.
-        call list_free(ll)
+        call free_memory(ll)
         return
       endif
 
       ! check HEAD
-      dat_a = list_get(ll)
+      dat_a = get(ll)
       print*, 'Checking head element ...', dat_a%x
       if(dat_a%x .ne. p_num_of_insertions) then
         print *, 'Head element should be: ', p_num_of_insertions, ' but was', dat_a%x
         test_result = .false.
-        call list_free(ll)
+        call free_memory(ll)
         return
       endif
 
@@ -82,8 +82,8 @@ program Modular_tests
       list_pointer => ll
       do 
         ! do a quick visit
-        dat_a = list_get(list_pointer)
-        list_pointer => list_next(list_pointer)
+        dat_a = get(list_pointer)
+        list_pointer => next(list_pointer)
         if (.not. associated(list_pointer)) exit
       enddo
       call cpu_time(time_final)
@@ -93,7 +93,7 @@ program Modular_tests
       if (dat_a%x .ne. 1) then
         print *, 'Last element should be 1 but was', dat_a%x
         test_result = .false.
-        call list_free(ll)
+        call free_memory(ll)
         return
       endif
 
@@ -102,11 +102,11 @@ program Modular_tests
       if (time_final-time_initial > p_visit_max_time_allowed) then
         print *, 'Visit Max time exceeded!!!'
         test_result = .false.
-        call list_free(ll)
+        call free_memory(ll)
         return
       endif
 
-      call list_free(ll)
+      call free_memory(ll)
       return
 
     end function
@@ -120,7 +120,7 @@ program Modular_tests
       type(list_t), pointer :: list_pointer => null()
       type(list_t), pointer :: list_pointer_before => null()
       type(data_t), allocatable :: dat_a
-      type(data_t), pointer :: data_t_ptr_aux
+
 
       integer :: an_integer
       integer, parameter :: p_num_of_insertions = 1000000
@@ -144,12 +144,12 @@ program Modular_tests
       ! Insert values
       allocate(dat_a)
       dat_a%x = 1
-      call list_init(ll, dat_a)
+      call init(ll, dat_a)
       deallocate(dat_a)
       do an_integer = 2, p_num_of_insertions
         allocate(dat_a)
         dat_a%x = an_integer
-        call list_insert(ll, DATA=dat_a)
+        call insert(ll, DATA=dat_a)
         deallocate(dat_a)
       enddo
 
@@ -159,7 +159,7 @@ program Modular_tests
       call cpu_time(time_initial)
       
       do an_integer = 1, p_num_of_random_deletions
-        list_pointer => list_next(ll)
+        list_pointer => next(ll)
         list_pointer_before => list_pointer
         call random_number(random_real_value_aux)
         random_value_of_remove_node = int(random_real_value_aux * list_size)
@@ -167,15 +167,15 @@ program Modular_tests
         ! print *, "trying", random_value_of_remove_node
 
         do 
-          dat_a = list_get(list_pointer)
+          dat_a = get(list_pointer)
           if (dat_a%x == random_value_of_remove_node) then
             ! print *, "removing item ", data_t_ptr_aux%x
-            call list_remove(list_pointer, list_pointer_before)
+            call remove(list_pointer, list_pointer_before)
             list_size = list_size -1
-            continue
+            exit
           endif
           list_pointer_before => list_pointer
-          list_pointer => list_next(list_pointer)
+          list_pointer => next(list_pointer)
           if (.not. associated(list_pointer)) exit
         enddo
       enddo
@@ -186,11 +186,11 @@ program Modular_tests
       if (time_final-time_initial > p_remove_max_time_allowed) then
         print *, 'Remove Max time exceeded!!!'
         test_result = .false.
-        call list_free(ll)
+        call free_memory(ll)
         return
       endif
 
-      call list_free(ll)
+      call free_memory(ll)
       return
 
     end function
@@ -203,7 +203,7 @@ program Modular_tests
 
     end function
 
-    logical function test_vectot_random_remove_performance() result(test_result)
+    logical function test_vector_random_remove_performance() result(test_result)
       use ModVector
       implicit none
 
