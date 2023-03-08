@@ -128,13 +128,16 @@ contains
     node_curr => next(self)
     do 
       if (node_curr%data%x == data_to_remove%x) then
+        ! print *, 'data removed = ', data_to_remove%x
         node_before%next => next(node_curr)
         is_removed = .true.
         return
       endif
       node_before => node_curr
       node_curr => next(node_curr)
+      if(.not. associated(node_curr)) return
     enddo
+    ! print *, 'not removed'
 
   end function remove
 

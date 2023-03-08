@@ -8,7 +8,7 @@ program Modular_tests
   logical all_tests_passed 
   
   integer, parameter :: p_num_of_insertions = 1000000
-  integer, parameter :: p_num_of_random_deletions  = 100
+  integer, parameter :: p_num_of_random_deletions  = 1000
 
   real, parameter :: p_insert_max_time_allowed = 0.2
   real, parameter :: p_visit_max_time_allowed  = 0.1
