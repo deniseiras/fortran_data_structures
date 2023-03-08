@@ -70,7 +70,7 @@ program Modular_tests
       ! check HEAD
       dat_a = get(ll)
       print*, 'Checking head element ...', dat_a%x
-      if(dat_a%x .ne. p_num_of_insertions) then
+      if(dat_a%x /= p_num_of_insertions) then
         print *, 'Head element should be: ', p_num_of_insertions, ' but was', dat_a%x
         test_result = .false.
         call free_memory(ll)
@@ -90,7 +90,7 @@ program Modular_tests
 
 
       print*, 'Checking last element ...', dat_a%x
-      if (dat_a%x .ne. 1) then
+      if (dat_a%x /= 1) then
         print *, 'Last element should be 1 but was', dat_a%x
         test_result = .false.
         call free_memory(ll)
