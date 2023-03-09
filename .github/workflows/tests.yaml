@@ -27,6 +27,8 @@ jobs:
 
       - uses: actions/checkout@v3
 
+      # no needs to install !
+      #
       # - name: GCC - Install
       #   run: |
       #     sudo add-apt-repository ppa:ubuntu-toolchain-r/test
@@ -38,31 +40,33 @@ jobs:
       #     --slave /usr/bin/gcov     gcov     /usr/bin/gcov-${GCC_V}
 
 
-
       # Unity and Module tests - DEBUG type
-      - name: Compile Tests Unity and Module - DEBUG
+      - name: Compile Unity and Modular Tests - DEBUG mode = g, O0, Wall, checkall
         run: |
           make clean
           make
               
         # default make is debug -Og -Wall -fcheck=all, generates Unity_tests_debug, Modular_tests_debug
-      - name: Run Unity Tests - DEBUG
-        run: |
-          cd test && ./run_tests_with_type_of_param.sh Unity_tests_debug
-
-      - name: Run Modular Tests - DEBUG
+      - name: Run Unity Tests - DEBUG mode
         run: |
           make runUnityTest
 
+      - name: Run Modular Tests - DEBUG mode
+        run: |
+          make runModularTest
 
 
       # Performance steps of Modular Tests
       # default make is debug -Og -Wall -fcheck=all, generates Unity_tests_debug, Modular_tests_debug
-      - name: Compile Tests Unity and Module - Performance
+      - name: Compile Tests Unity and Module - Performance mode = O3
         run: |
           make clean
           FFLAGS=-O3 UNITY_TESTS_APP_NAME=Unity_tests_O3 MODULAR_TESTS_APP_NAME=Modular_tests_O3 make
       
-      - name: Run Modular Tests - Performance
+      - name: Run Unity Tests - Performance mode
+        run: |
+          MODULAR_TESTS_APP_NAME=Unity_tests_O3 make runUnityTest
+
+      - name: Run Modular Tests - Performance mode
         run: |
           MODULAR_TESTS_APP_NAME=Modular_tests_O3 make runModularTest
