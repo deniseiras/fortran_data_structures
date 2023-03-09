@@ -65,7 +65,7 @@ jobs:
       
       - name: Run Unity Tests - Performance mode
         run: |
-          MODULAR_TESTS_APP_NAME=Unity_tests_O3 make runUnityTest
+          UNITY_TESTS_APP_NAME=Unity_tests_O3 make runUnityTest
 
       - name: Run Modular Tests - Performance mode
         run: |
