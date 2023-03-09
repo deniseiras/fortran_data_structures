@@ -8,20 +8,19 @@ program Modular_tests
   logical all_tests_passed 
   
   integer, parameter :: p_num_of_insertions = 1000000
-  integer, parameter :: p_num_of_random_deletions  = 1000
+  integer, parameter :: p_num_of_deletions  = 1000
 
   real, parameter :: p_insert_max_time_allowed = 0.2
   real, parameter :: p_visit_max_time_allowed  = 0.1
   real, parameter :: p_remove_max_time_allowed = 10.0
 
-
   print*, ">>>>> Running Modular Tests"
   
   all_tests_passed = .true.
   all_tests_passed = all_tests_passed .and. test_insert_performance()
-  all_tests_passed = all_tests_passed .and. test_list_random_remove_performance()
+  all_tests_passed = all_tests_passed .and. test_list_remove_performance()
   all_tests_passed = all_tests_passed .and. test_vector_insert_performance()
-  all_tests_passed = all_tests_passed .and. test_vector_random_remove_performance()
+  all_tests_passed = all_tests_passed .and. test_vector_remove_performance()
 
   if (all_tests_passed) then
     print*, ">>>>> All tests OK !"
@@ -118,7 +117,7 @@ program Modular_tests
     end function test_insert_performance
 
 
-    logical function test_list_random_remove_performance() result(test_result)
+    logical function test_list_remove_performance() result(test_result)
       use Modlist
       implicit none
 
@@ -130,9 +129,7 @@ program Modular_tests
       integer :: an_integer
       real :: time_initial, time_final 
 
-      integer :: list_size, random_value_of_remove_node 
-      real :: random_real_value_aux
-      integer,parameter :: seed = 86456
+      integer :: list_size 
       logical :: is_removed
   
       print*, ">>>>> Running Test List random remove Performance"
@@ -148,17 +145,14 @@ program Modular_tests
         call insert(ll, DATA=dat_a)
       enddo
 
-      ! remove random positions
-      print *, "removing ", p_num_of_random_deletions, " elements of list of size ", p_num_of_insertions
-      call random_init(.true. , .true.)
+      print *, "removing ", p_num_of_deletions, " elements of list of size ", p_num_of_insertions
       call cpu_time(time_initial)
       
-      do an_integer = 1, p_num_of_random_deletions
+      do an_integer = 1, p_num_of_deletions
         list_pointer => next(ll)
-        call random_number(random_real_value_aux)
-        random_value_of_remove_node = int(random_real_value_aux * list_size)
-        data_to_remove%x = max(random_value_of_remove_node, 1)
-        ! print *, "trying", random_value_of_remove_node
+        ! removes using a step
+        data_to_remove%x = an_integer * (p_num_of_insertions/p_num_of_deletions) - an_integer
+        ! print *, 'removing ', data_to_remove%x
         is_removed = remove(list_pointer, data_to_remove)
         if(is_removed) list_size = list_size -1
       enddo
@@ -176,7 +170,7 @@ program Modular_tests
       call free_memory(ll)
       return
 
-    end function test_list_random_remove_performance
+    end function test_list_remove_performance
 
 
     logical function test_vector_insert_performance() result(test_result)
@@ -251,7 +245,7 @@ program Modular_tests
 
     end function test_vector_insert_performance
 
-    logical function test_vector_random_remove_performance() result(test_result)
+    logical function test_vector_remove_performance() result(test_result)
       use ModVector
       implicit none
       type(vector_t) :: vec
@@ -261,9 +255,6 @@ program Modular_tests
       real :: time_initial, time_final 
 
       type(data_t) :: data_to_remove
-      integer :: random_value_of_remove_node 
-      real :: random_real_value_aux
-      integer,parameter :: seed = 86456
       logical :: dummy
 
       print*, ">>>>> Running Test vector random remove Performance"
@@ -276,16 +267,12 @@ program Modular_tests
         dat_a%x = an_integer+1
       enddo
       call print_all(vec)
-      ! remove random positions
-      print *, "removing ", p_num_of_random_deletions, " elements of vector of size ", p_num_of_insertions
-      call random_init(.true. , .true.)
+      print *, "removing ", p_num_of_deletions, " elements of vector of size ", p_num_of_insertions
       call cpu_time(time_initial)
-      do an_integer = 1, p_num_of_random_deletions
-        call random_number(random_real_value_aux)
-        random_value_of_remove_node = 1+int(random_real_value_aux * (p_num_of_insertions-an_integer))
-        !random_value_of_remove_node = max(random_value_of_remove_node, 1)
-        data_to_remove%x = random_value_of_remove_node
-        ! print*, "removing data_to_remove%x
+      do an_integer = 1, p_num_of_deletions
+        ! removes using a step
+        data_to_remove%x = an_integer * (p_num_of_insertions/p_num_of_deletions) - an_integer
+        ! print*, 'removing ', data_to_remove%x
         dummy = remove(vec, data_to_remove)
       enddo
       call cpu_time(time_final)
@@ -302,7 +289,7 @@ program Modular_tests
       call free_memory(vec)
       return
 
-    end function test_vector_random_remove_performance
+    end function test_vector_remove_performance
 
   
 end program Modular_tests
