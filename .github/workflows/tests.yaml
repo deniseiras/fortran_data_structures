@@ -61,7 +61,7 @@ jobs:
       - name: Compile Tests Unity and Module - Performance mode = O3
         run: |
           make clean
-          FFLAGS=-O3 UNITY_TESTS_APP_NAME=Unity_tests_O3 MODULAR_TESTS_APP_NAME=Modular_tests_O3 make
+          FFLAGS="-O3 -ffree-line-length-none" UNITY_TESTS_APP_NAME=Unity_tests_O3 MODULAR_TESTS_APP_NAME=Modular_tests_O3 make
       
       - name: Run Unity Tests - Performance mode
         run: |
