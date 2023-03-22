@@ -32,7 +32,10 @@ program Unity_tests
 
     ! List Tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     !
+
+
     integer function test_list_init() result(test_error)
+
       use Modlist
       implicit none 
 
@@ -55,7 +58,15 @@ program Unity_tests
       if (dat_test%x /= 1) then
         print *, 'Head node data should be: 1 but was', dat_test%x
         test_error = 1
+        call free_memory(ll)
       endif
+
+      if( associated(next(ll) )) then
+        print *, 'Head node data should be: 1 but was', dat_test%x
+        test_error = 1
+        call free_memory(ll)
+      endif
+      
       
       call free_memory(ll)
       return
@@ -213,7 +224,19 @@ program Unity_tests
         return
       endif
 
+
+      print *, 'tries to remove one element from null pointer list'
+      dat_x%x = 20
+      is_removed = remove(ll, dat_x)
+      if (associated(ll)) then
+        print *, '!!!!! TEST FAILED !!!!! List should not contains elements'
+        call free_memory(ll)
+        test_error = 1
+        return
+      endif
+
     end function
+
 
     ! Vector Tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     !
